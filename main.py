@@ -5,9 +5,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup as bs
 from lxml import etree  
 import pandas as pd
-from helper import create_input_output_pairs
-
-# TODO: Create better data stucture in the Data folder. 
+from helper import get_transcription_links
 
 class WebCrawler:
     def __init__(self, web_link: list, filename_stem: list):
@@ -78,15 +76,14 @@ if __name__ == "__main__":
     # TODO: find a better way to reduce this argument parser.
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "input_file", help="Please give a file contains multiple web links."
+        "links", help="Please give a file contains multiple web links of the transcriptions and audios"
     )
     parser.add_argument("data_dir", help="Please give a directory to store the data")
     args = parser.parse_args()
-    data_pairs = create_input_output_pairs(args.input_file)
-    # check if the Data dir exists, if it doese not exist, then create a folder.
+    pairs = get_transcription_links(args.links)
     Path(args.data_dir).mkdir(parents=True, exist_ok=True)
     data_dir = args.data_dir
-    for filename, link in data_pairs.items():
+    for filename, link in pairs.items():
         wc = WebCrawler(link, filename)
         xml_file_path = wc.get_material(data_dir)
         if xml_file_path:
